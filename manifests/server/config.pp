@@ -44,6 +44,7 @@ class mongodb::server::config {
   $configdg        = $mongodb::server::configdb
   $shardsvr        = $mongodb::server::shardsvr
   $replset         = $mongodb::server::replset
+  $shardsvr        = $mongodb::server::shardsvr
   $rest            = $mongodb::server::rest
   $quiet           = $mongodb::server::quiet
   $slowms          = $mongodb::server::slowms

@@ -145,6 +145,10 @@ shardsvr = <%= @shardsvr %>
 # Configure ReplicaSet membership
 replSet = <%= @replset %>
 <% end -%>
+<% if @shardsvr -%>
+# Configure Sharding
+shardsvr = true
+<% end -%>
 <% if @smallfiles -%>
 # Use a smaller default data file size.
 smallfiles = <%= @smallfiles %>

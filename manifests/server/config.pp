@@ -1,10 +1,12 @@
 # PRIVATE CLASS: do not call directly
 class mongodb::server::config {
-  $ensure          = $mongodb::server::ensure
-  $user            = $mongodb::server::user
-  $group           = $mongodb::server::group
-  $config          = $mongodb::server::config
-  $config_content  = $mongodb::server::config_content
+  $ensure               = $mongodb::server::ensure
+  $user                 = $mongodb::server::user
+  $group                = $mongodb::server::group
+  $config               = $mongodb::server::config
+  $config_content       = $mongodb::server::config_content
+  $config_shard         = $mongodb::server::config_shard
+  $config_content_shard = $mongodb::server::config_content_shard
 
   $dbpath          = $mongodb::server::dbpath
   $pidfilepath     = $mongodb::server::pidfilepath
@@ -39,6 +41,7 @@ class mongodb::server::config {
   $only            = $mongodb::server::only
   $source          = $mongodb::server::source
   $configsvr       = $mongodb::server::configsvr
+  $configdg        = $mongodb::server::configdb
   $shardsvr        = $mongodb::server::shardsvr
   $replset         = $mongodb::server::replset
   $rest            = $mongodb::server::rest
@@ -76,6 +79,12 @@ class mongodb::server::config {
     } else {
       $cfg_content = template('mongodb/mongodb.conf.erb')
     }
+    #Pick which config content to use
+    if $config_content_shard {
+      $cfg_content_shard = $config_content_shard
+    } else {
+      $cfg_content_shard = template('mongodb/mongos.conf.erb')
+    }
 
     file { $config:
       content => $cfg_content,
@@ -83,6 +92,13 @@ class mongodb::server::config {
       group   => 'root',
       mode    => '0644',
       notify  => Class['mongodb::server::service']
+    }
+
+    file { $config_shard:
+      content => $cfg_content_shard,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
     }
 
     file { $dbpath:

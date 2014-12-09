@@ -5,6 +5,10 @@ class mongodb::params inherits mongodb::globals {
   $service_ensure        = pick($mongodb::globals::service_ensure, 'running')
   $service_status        = $mongodb::globals::service_status
 
+  $sharding_service_enable        = pick($mongodb::globals::sharding_service_enable, true)
+  $sharding_service_ensure        = pick($mongodb::globals::sharding_service_ensure, 'running')
+  $sharding_service_status        = $mongodb::globals::service_status
+
   # Amazon Linux's OS Family is 'Linux', operating system 'Amazon'.
   case $::osfamily {
     'RedHat', 'Linux': {
@@ -15,29 +19,37 @@ class mongodb::params inherits mongodb::globals {
         if ($::mongodb::globals::version == undef) {
           $server_package_name = pick($::mongodb::globals::server_package_name, 'mongodb-org-server')
           $client_package_name = pick($::mongodb::globals::client_package_name, 'mongodb-org-shell')
+          $sharding_package_name = pick($::mongodb::globals::sharding_package_name, 'mongodb-org-mongos')
           $package_ensure = true
           $package_ensure_client = true
+          $package_ensure_sharding = true
         } else {
           # check if the version is greater than 2.6
           if(versioncmp($::mongodb::globals::version, '2.6.0') >= 0) {
             $server_package_name = pick($::mongodb::globals::server_package_name, 'mongodb-org-server')
             $client_package_name = pick($::mongodb::globals::client_package_name, 'mongodb-org-shell')
+            $sharding_package_name = pick($::mongodb::globals::sharding_package_name, 'mongodb-org-mongos')
             $package_ensure = $::mongodb::globals::version
             $package_ensure_client = $::mongodb::globals::version
+            $package_ensure_sharding = $::mongodb::globals::version
           } else {
             $server_package_name = pick($::mongodb::globals::server_package_name, 'mongodb-10gen')
             $client_package_name = pick($::mongodb::globals::client_package_name, 'mongodb-10gen')
+            $sharding_package_name = pick($::mongodb::globals::sharding_package_name, 'mongodb-10gen')
             $package_ensure = $::mongodb::globals::version
             $package_ensure_client = $::mongodb::globals::version #this is still needed in case they are only installing the client
+            $package_ensure_sharding = $::mongodb::globals::version
           }
         }
-        $service_name = pick($::mongodb::globals::service_name, 'mongod')
-        $config       = '/etc/mongod.conf'
-        $dbpath       = '/var/lib/mongodb'
-        $logpath      = '/var/log/mongodb/mongod.log'
-        $pidfilepath  = '/var/run/mongodb/mongod.pid'
-        $bind_ip      = pick($::mongodb::globals::bind_ip, ['127.0.0.1'])
-        $fork         = true
+        $service_name          = pick($::mongodb::globals::service_name, 'mongod')
+        $sharding_service_name = pick($::mongodb::globals::sharding_service_name, 'mongos')
+        $config                = '/etc/mongod.conf'
+        $config_shard          = '/etc/mongos.conf'
+        $dbpath                = '/var/lib/mongodb'
+        $logpath               = '/var/log/mongodb/mongod.log'
+        $pidfilepath           = '/var/run/mongodb/mongod.pid'
+        $bind_ip               = pick($::mongodb::globals::bind_ip, ['127.0.0.1'])
+        $fork                  = true
       } else {
         # RedHat/CentOS doesn't come with a prepacked mongodb
         # so we assume that you are using EPEL repository.

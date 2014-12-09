@@ -1,7 +1,10 @@
 # PRIVATE CLASS: do not call directly
 class mongodb::server::install {
-  $package_ensure = $mongodb::server::package_ensure
-  $package_name   = $mongodb::server::package_name
+  $package_ensure           = $mongodb::server::package_ensure
+  $package_name             = $mongodb::server::package_name
+  $enable_sharding          = $mongodb::server::enable_sharding
+  $sharding_package_ensure  = $mongodb::server::sharding_package_ensure
+  $sharding_package_name    = $mongodb::server::sharding_package_name
 
   case $package_ensure {
     true:     {
@@ -31,4 +34,13 @@ class mongodb::server::install {
     name    => $package_name,
     tag     => 'mongodb',
   }
+
+  if $enable_sharding {
+    package {'mongos' :
+      ensure  => $sharding_package_ensure,
+      name    => $sharding_package_name,
+      tag     => 'mongodb',
+    }
+  }
+
 }

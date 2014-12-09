@@ -6,6 +6,7 @@ class mongodb::server (
   $group            = $mongodb::params::group,
 
   $config           = $mongodb::params::config,
+  $config_shard     = $mongodb::params::config_shard,
   $dbpath           = $mongodb::params::dbpath,
   $pidfilepath      = $mongodb::params::pidfilepath,
 
@@ -15,8 +16,17 @@ class mongodb::server (
   $service_ensure   = $mongodb::params::service_ensure,
   $service_status   = $mongodb::params::service_status,
 
+  $sharding_service_name     = $mongodb::params::sharding_service_name,
+  $sharding_service_enable   = $mongodb::params::sharding_service_enable,
+  $sharding_service_ensure   = $mongodb::params::sharding_service_ensure,
+  $sharding_service_status   = $mongodb::params::sharding_service_status,
+
   $package_ensure  = $mongodb::params::package_ensure,
   $package_name    = $mongodb::params::server_package_name,
+
+  $enable_sharding         = false,
+  $sharding_package_ensure = $mongodb::params::sharding_package_ensure,
+  $sharding_package_name   = $mongodb::params::sharding_package_name,
 
   $logpath         = $mongodb::params::logpath,
   $bind_ip         = $mongodb::params::bind_ip,
@@ -50,6 +60,7 @@ class mongodb::server (
   $mms_interval    = undef,
   $replset         = undef,
   $configsvr       = undef,
+  $configdb        = undef,
   $shardsvr        = undef,
   $rest            = undef,
   $quiet           = undef,
@@ -59,6 +70,7 @@ class mongodb::server (
   $syslog          = undef,
   
   $config_content  = undef,
+  $config_content_shard  = undef,
 
   # Deprecated parameters
   $master          = undef,
